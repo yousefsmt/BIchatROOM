@@ -1,7 +1,7 @@
 cmake_minimum_required(VERSION 3.10)
 
 # Project name and language
-project(MyCppProject LANGUAGES CXX)
+project(run LANGUAGES CXX)
 
 # Specify the C++ standard
 set(CMAKE_CXX_STANDARD 17)
@@ -13,16 +13,9 @@ include_directories(include)
 # Source files
 set(SOURCES
     src/main.cpp 
-    src/admin.cpp  
-    src/airport.cpp  
-    src/customer.cpp  
-    src/date.cpp  
-    src/domesticcities.cpp  
-    src/domesticflights.cpp  
-    src/food.cpp  
-    src/foreigncities.cpp  
-    src/foreignflights.cpp   
-    src/tax.cpp
+    src/client.cpp  
+    src/handler.cpp
+    src/server.cpp   
 )
 
 # Create executable
