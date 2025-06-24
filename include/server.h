@@ -55,13 +55,15 @@ bool Server::CreateSocket(){
 
 bool Server::ReceiveMessage(char *RecvMessage){
     int isReceive {};
+    sockaddr_un ReceiveAddress {};
+    socklen_t ReceiveAddressLen {};
 
-    isReceive = recvfrom(CreationSocket_Server, RecvMessage, sizeof(RecvMessage), 0, nullptr, nullptr);
+    isReceive = recvfrom(CreationSocket_Server, RecvMessage, 1024, 0, nullptr, nullptr);
     if (isReceive == -1){
         perror("receive failed: ");
         return 0;
     }
-        
+    RecvMessage[isReceive] = '\0';
     return 1;
 }
 

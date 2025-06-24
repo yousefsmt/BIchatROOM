@@ -22,7 +22,7 @@ class Client{
         ClientParameters ClientParam {};
     public:
         bool CreateSocket();
-        bool SendMessage(const char *SendMessage);
+        bool SendMessage(char *SendMessage);
         bool ReceiveMessage(char *RecvMessage);
 };
 
@@ -56,7 +56,8 @@ bool Client::CreateSocket(){
 
 bool Client::ReceiveMessage(char *RecvMessage){
     int isReceive {};
-    isReceive = recvfrom(CreationSocket_Client, RecvMessage, sizeof(RecvMessage), 0, nullptr, nullptr);
+    
+    isReceive = recvfrom(CreationSocket_Client, RecvMessage, 1023, 0, nullptr, nullptr);
     if (isReceive == -1){
         perror("recv failed: ");
         return 0;
@@ -64,8 +65,9 @@ bool Client::ReceiveMessage(char *RecvMessage){
     return 1;
 }
 
-bool Client::SendMessage(const char *SendMessage){
+bool Client::SendMessage(char *SendMessage){
     int isSend {};
+
     isSend = sendto(CreationSocket_Client, SendMessage, strlen(SendMessage), 0, (sockaddr*)&ClientParam.SentAddress, ClientParam.SentAddressLen);
     if (isSend == -1){
         perror("send failed: ");

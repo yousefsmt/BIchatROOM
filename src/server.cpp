@@ -1,14 +1,14 @@
 #include <iostream>
+#include <pthread.h>
 #include "server.h"
+#include "handler.h"
+
 
 int main() {
-    Server server {};
-    char *Msg;
+    pthread_t thread;
 
-    server.CreateSocket();
-    server.ReceiveMessage(Msg);
-
-    std::cout << Msg << '\n';
+    pthread_create(&thread, NULL, &RunReceiveThread, NULL);
+    pthread_join(thread, NULL);
     
     return 0;
 }
