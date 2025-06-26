@@ -11,8 +11,8 @@
 #define CLIENT_PATH "/tmp/client"
 
 typedef struct{
-    sockaddr_un Address {};
-    socklen_t AddressLen {};
+    sockaddr_un Address {}, SentAddress {};
+    socklen_t AddressLen {}, SentAddressLen {};
 
 }ServerParameters;
 
@@ -23,6 +23,7 @@ class Server{
     public:
         bool CreateSocket();
         bool ReceiveMessage(char *RecvMessage);
+        bool SendMessage(char *SendMessage);
 };
 
 bool Server::CreateSocket(){
@@ -46,9 +47,9 @@ bool Server::CreateSocket(){
         return 0;
     }
 
-    // ServerParam.SentAddress.sun_family = AF_UNIX;
-    // strncpy(ServerParam.SentAddress.sun_path, SERVER_PATH, sizeof(ServerParam.SentAddress.sun_path)-1);
-    // ServerParam.SentAddressLen = sizeof(ClientParam.SentAddress);
+    ServerParam.SentAddress.sun_family = AF_UNIX;
+    strncpy(ServerParam.SentAddress.sun_path, CLIENT_PATH, sizeof(ServerParam.SentAddress.sun_path)-1);
+    ServerParam.SentAddressLen = sizeof(ServerParam.SentAddress);
 
     return 1;
 }
@@ -64,6 +65,17 @@ bool Server::ReceiveMessage(char *RecvMessage){
         return 0;
     }
     RecvMessage[isReceive] = '\0';
+    return 1;
+}
+
+bool Server::SendMessage(char *SendMessage){
+    int isSend {};
+
+    isSend = sendto(CreationSocket_Server, SendMessage, strlen(SendMessage), 0, (sockaddr*)&ServerParam.SentAddress, ServerParam.SentAddressLen);
+    if (isSend == -1){
+        perror("send failed: ");
+        return 0;
+    }
     return 1;
 }
 

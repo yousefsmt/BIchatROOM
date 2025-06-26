@@ -1,15 +1,21 @@
-#include <iostream>
+#include "handler.h"
 #include "client.h"
 
+void init(){
+    std::cout << "******** Welcome to BIchatROOM ********\n"
+              << "Please set a username: ";
+}
+
 int main() {
-    Client client;
-    char SendMsg[] = "Send Message";
+    pthread_t ThreadSend, ThreadReceive;
 
-    if (!client.CreateSocket())
-        std::cerr << "ERROR: Client socket didn't create\n";
+    init();
 
-    if (!client.SendMessage(SendMsg))
-        std::cerr << "ERROR: Client cannot send message\n";
+    pthread_create(&ThreadSend, nullptr, &RunSendThread_Client, nullptr);
+    pthread_create(&ThreadReceive, nullptr, &RunReceiveThread_Client, nullptr);
+
+    pthread_join(ThreadSend, nullptr);
+    pthread_join(ThreadReceive, nullptr);
     
     return 0;
 }

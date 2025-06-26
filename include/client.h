@@ -13,6 +13,7 @@
 typedef struct{
     sockaddr_un Address {}, SentAddress {};
     socklen_t AddressLen {}, SentAddressLen {};
+    std::string UserName {};
 
 }ClientParameters;
 
