@@ -2,18 +2,31 @@
 #define HANDLER_H
 
 #include <iostream>
-#include <pthread.h>
-#include "server.h"
-#include "client.h"
+#include <thread>
+#include <cstring>
+#include <unistd.h>
+#include <arpa/inet.h>
 
 typedef struct handler
 {
-    Server server;
-    Client client;
+    sockaddr_in serverAddress;
+    sockaddr_in ServerSentAddr;
+
+    sockaddr_in clientAddress;
+    sockaddr_in ClientSentAddr;
+
+    socklen_t ServerSentAddrLen;
+    socklen_t ClientSentAddrLen;
+    
+    int ServerSocket;
+    int ClientSocket;
+
     char BufferServer[1024];
     char BufferClient[1024];
-    char SendMsgServer[1024];
-    char SendMsgClient[1024];
+
+    std::string SendMsgServer;
+    std::string SendMsgClient;
+
     std::string UserName_Server;
     std::string UserName_Client;
     
@@ -21,85 +34,68 @@ typedef struct handler
 
 HandlerParameters HandleParam {};
 
-bool CreateAll_Socket(void){
+bool Create_ServerSocket(){
+    int isWork {};
 
-    if (!HandleParam.server.CreateSocket())
-        std::cerr << "ERROR: Server socket didn't create\n";
+    HandleParam.ServerSocket = socket(AF_INET, SOCK_STREAM, 0);
+    if (HandleParam.ServerSocket < 0) {
+        perror("socket failed");
+        return 0;
+    }
 
-    if (!HandleParam.client.CreateSocket())
-        std::cerr << "ERROR: Client socket didn't create\n";
+    
+    HandleParam.ServerSentAddrLen = sizeof(HandleParam.ServerSentAddr);
+
+    HandleParam.serverAddress.sin_family = AF_INET;
+    HandleParam.serverAddress.sin_port = htons(9000);
+    HandleParam.serverAddress.sin_addr.s_addr = INADDR_ANY;
+
+    if (bind(HandleParam.ServerSocket, (sockaddr*)&HandleParam.serverAddress, sizeof(HandleParam.serverAddress)) < 0) {
+        perror("bind failed");
+        return 0;
+    }
+
+    listen(HandleParam.ServerSocket, 1);
+    std::cout << "Server listening on port 9000...\n";
+
+    int clientSocket = accept(HandleParam.ServerSocket, (sockaddr*)&HandleParam.ServerSentAddr, &HandleParam.ServerSentAddrLen);
+    if (clientSocket < 0) {
+        perror("accept failed");
+        return 0;
+    }
 
     return 1;
 }
 
-void* RunReceiveThread_Server(void* args){
-    std::string ClientName {};
-    pthread_setname_np(pthread_self(), "ReceiveServer");
+bool Create_ClientSocket(){
+    int isWork {};
 
-    if (!HandleParam.server.ReceiveMessage(HandleParam.BufferServer))
-        std::cerr << "ERROR: Server cannot receive message\n";
-
-    ClientName = HandleParam.BufferServer;
-    std::cout << "Client Connected... Client Name: " << ClientName << '\n';
-
-    while (1)
-    {
-        if (!HandleParam.server.ReceiveMessage(HandleParam.BufferServer))
-            std::cerr << "ERROR: Server cannot receive message\n";
-        std::cout << "Server(" << ClientName << "): " << HandleParam.BufferServer << '\n';
+    HandleParam.ClientSocket = socket(AF_INET, SOCK_STREAM, 0);
+    if (HandleParam.ClientSocket < 0) {
+        perror("socket failed");
+        return 0;
     }
-}
 
-void* RunSendThread_Server(void* args){
-    pthread_setname_np(pthread_self(), "SendServer");
+    HandleParam.ClientSentAddr.sin_family = AF_INET;
+    HandleParam.ClientSentAddr.sin_port = htons(9000);
+    inet_pton(AF_INET, "127.0.0.1", &HandleParam.ClientSentAddr.sin_addr);
 
-    std::cin >> HandleParam.UserName_Server;
-
-    if (!HandleParam.server.SendMessage((char *)&HandleParam.UserName_Server))
-        std::cerr << "ERROR: Client cannot send message\n";
-
-    while (1)
-    {
-        std::cout << "Own(" << HandleParam.UserName_Server << "): ";
-        std::cin >> HandleParam.SendMsgServer;
-        if (!HandleParam.server.SendMessage(HandleParam.SendMsgServer))
-            std::cerr << "ERROR: Client cannot send message\n";
+    if (connect(HandleParam.ClientSocket, (sockaddr*)&HandleParam.ClientSentAddr, sizeof(HandleParam.ClientSentAddr)) < 0) {
+        perror("connect failed");
+        return 0;
     }
-}
 
-void* RunReceiveThread_Client(void* args){
-    std::string ServerName {};
-    pthread_setname_np(pthread_self(), "ReceiveClient");
-
-    if (!HandleParam.client.ReceiveMessage(HandleParam.BufferClient))
-        std::cerr << "ERROR: Client cannot receive message\n";
-
-    ServerName = HandleParam.BufferClient;
-    std::cout << "Server Connected... Server Name: " << ServerName << '\n';
-
-    while (1)
-    {
-        if (!HandleParam.client.ReceiveMessage(HandleParam.BufferClient))
-            std::cerr << "ERROR: Client cannot receive message\n";
-        std::cout << "Server(" << ServerName << "): " << HandleParam.BufferClient << '\n';
-    }
-}
-
-void* RunSendThread_Client(void* args){
-    pthread_setname_np(pthread_self(), "SendClient");
+    std::cout << "Connected to server!\n";
     
-    std::cin >> HandleParam.UserName_Client;
-
-    if (!HandleParam.client.SendMessage((char *)&HandleParam.UserName_Client))
-        std::cerr << "ERROR: Client cannot send message\n";
-
-    while (1)
-    {
-        std::cout << "Own(" << HandleParam.UserName_Client << "): ";
-        std::cin >> HandleParam.SendMsgClient;
-        if (!HandleParam.client.SendMessage(HandleParam.SendMsgClient))
-            std::cerr << "ERROR: Client cannot send message\n";
-    }
+    return 1;
 }
 
-#endif // !HANDLER_HRunReceiveThread_Server
+void SendMessage_Server(){}
+
+void SendMessage_Client(){}
+
+void ReceiveMessage_Server(){}
+
+void ReceiveMessage_Client(){}
+
+#endif // !HANDLER_H
