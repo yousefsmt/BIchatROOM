@@ -1,19 +1,20 @@
-# Bi-directional Chat Room
+# 🗨️ Bi-directional Chat Room
 
-A C++ project simulating a flight reservation platform, developed as the final assignment for the *Advanced Programming* course. The system supports both admin and customer functionalities, including flight management, ticket booking, refunds, and more.
+This project implements a simple terminal-based bi-directional chat room using sockets in C++. Both the client and server can send and receive messages simultaneously.
 
 ## 📚 Project Overview
 
-This console-based system models a travel agency with two main user roles:
-
+This is a console-based application that enables real-time communication between a server and a client. It demonstrates fundamental concepts of socket programming and multithreading in C++ on Linux systems.
 
 ## ⚙️ How to Build
 
-Ensure you have a C++ compiler installed (e.g., g++, clang).
+Make sure you have `CMake` and a C++ compiler (e.g., `g++`, `clang`) installed on your Linux machine.
 
 ```bash
+# Create and enter the build directory
 mkdir build
 cd build
-cmake ../
+
+# Generate build files and compile the project
+cmake ..
 make
-./MyCppProject
