@@ -13,6 +13,8 @@ int main(){
     pthread_join(sendThread, nullptr);
     pthread_join(recvThread, nullptr);
 
+    printf("55555555");
+
     close(HandleParam.ClientSocket);
     close(HandleParam.ServerSocket);
 
