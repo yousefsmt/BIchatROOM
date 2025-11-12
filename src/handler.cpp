@@ -1,32 +1,41 @@
 #include "handler.h"
 
+#define UNUSED(x) (void) (x)
 
-bool Create_ServerSocket(){
-    int isWork {};
+bool Create_ServerSocket()
+{
+    int is_work{};
 
-    HandleParam.ServerSocket = socket(AF_INET, SOCK_STREAM, 0);
-    if (HandleParam.ServerSocket < 0) {
+    handle_param.server_socket = socket(AF_INET, SOCK_STREAM, 0);
+    if (handle_param.server_socket < 0)
+    {
         perror("socket failed");
         return 0;
     }
 
-    
-    HandleParam.ServerSentAddrLen = sizeof(HandleParam.ServerSentAddr);
+    handle_param.server_sent_addr_len = sizeof(handle_param.server_sent_addr);
 
-    HandleParam.serverAddress.sin_family = AF_INET;
-    HandleParam.serverAddress.sin_port = htons(9000);
-    HandleParam.serverAddress.sin_addr.s_addr = INADDR_ANY;
+    handle_param.server_address.sin_family      = AF_INET;
+    handle_param.server_address.sin_port        = htons(9000);
+    handle_param.server_address.sin_addr.s_addr = INADDR_ANY;
+    is_work                                     = bind(handle_param.server_socket,
+                   (sockaddr*) &handle_param.server_address,
+                   sizeof(handle_param.server_address));
 
-    if (bind(HandleParam.ServerSocket, (sockaddr*)&HandleParam.serverAddress, sizeof(HandleParam.serverAddress)) < 0) {
+    if (is_work < 0)
+    {
         perror("bind failed");
         return 0;
     }
 
-    listen(HandleParam.ServerSocket, 1);
+    listen(handle_param.server_socket, 1);
     std::cout << "Server listening on port 9000...\n";
 
-    HandleParam.ClientSocket = accept(HandleParam.ServerSocket, (sockaddr*)&HandleParam.ServerSentAddr, &HandleParam.ServerSentAddrLen);
-    if (HandleParam.ClientSocket < 0) {
+    handle_param.client_socket = accept(handle_param.server_socket,
+                                        (sockaddr*) &handle_param.server_sent_addr,
+                                        &handle_param.server_sent_addr_len);
+    if (handle_param.client_socket < 0)
+    {
         perror("accept failed");
         return 0;
     }
@@ -34,20 +43,26 @@ bool Create_ServerSocket(){
     return 1;
 }
 
-bool Create_ClientSocket(){
-    int isWork {};
+bool Create_ClientSocket()
+{
+    int is_work{};
 
-    HandleParam.ClientSendSocket = socket(AF_INET, SOCK_STREAM, 0);
-    if (HandleParam.ClientSendSocket < 0) {
+    handle_param.client_send_socket = socket(AF_INET, SOCK_STREAM, 0);
+    if (handle_param.client_send_socket < 0)
+    {
         perror("socket failed");
         return 0;
     }
 
-    HandleParam.ClientSentAddr.sin_family = AF_INET;
-    HandleParam.ClientSentAddr.sin_port = htons(9000);
-    inet_pton(AF_INET, "127.0.0.1", &HandleParam.ClientSentAddr.sin_addr);
+    handle_param.client_sent_addr.sin_family = AF_INET;
+    handle_param.client_sent_addr.sin_port   = htons(9000);
+    is_work = inet_pton(AF_INET, "127.0.0.1", &handle_param.client_sent_addr.sin_addr);
+    is_work = connect(handle_param.client_send_socket,
+                      (sockaddr*) &handle_param.client_sent_addr,
+                      sizeof(handle_param.client_sent_addr));
 
-    if (connect(HandleParam.ClientSendSocket, (sockaddr*)&HandleParam.ClientSentAddr, sizeof(HandleParam.ClientSentAddr)) < 0) {
+    if (is_work < 0)
+    {
         perror("connect failed");
         return 0;
     }
@@ -57,37 +72,68 @@ bool Create_ClientSocket(){
     return 1;
 }
 
-void* SendMessage_Server(void* args){
-    while (true) {
+void* SendMessage_Server(void* args)
+{
+    UNUSED(args);
+    while (true)
+    {
         std::cout << "You: ";
-        std::getline(std::cin, HandleParam.SendMsgServer);
-        send(HandleParam.ClientSocket, HandleParam.SendMsgServer.c_str(), HandleParam.SendMsgServer.size(), 0);
+        std::getline(std::cin, handle_param.send_msg_server);
+        send(handle_param.client_socket,
+             handle_param.send_msg_server.c_str(),
+             handle_param.send_msg_server.size(),
+             0);
     }
+
+    return nullptr;
 }
 
-void* SendMessage_Client(void* args){
-    while (true) {
+void* SendMessage_Client(void* args)
+{
+    UNUSED(args);
+    while (true)
+    {
         std::cout << "You: ";
-        std::getline(std::cin, HandleParam.SendMsgClient);
-        send(HandleParam.ClientSendSocket, HandleParam.SendMsgClient.c_str(), HandleParam.SendMsgClient.size(), 0);
+        std::getline(std::cin, handle_param.send_msg_client);
+        send(handle_param.client_send_socket,
+             handle_param.send_msg_client.c_str(),
+             handle_param.send_msg_client.size(),
+             0);
     }
+
+    return nullptr;
 }
 
-void* ReceiveMessage_Server(void* args){
-    while (true) {
-        memset(HandleParam.BufferServer, 0, sizeof(HandleParam.BufferServer));
-        int bytes = recv(HandleParam.ClientSocket, HandleParam.BufferServer, sizeof(HandleParam.BufferServer), 0);
+void* ReceiveMessage_Server(void* args)
+{
+    UNUSED(args);
+    while (true)
+    {
+        memset(handle_param.buffer_server, 0, sizeof(handle_param.buffer_server));
+        ssize_t bytes = recv(handle_param.client_socket,
+                             handle_param.buffer_server,
+                             sizeof(handle_param.buffer_server),
+                             0);
         if (bytes <= 0) break;
-        std::cout << "\nClient: " << HandleParam.BufferServer << std::endl;
+        std::cout << "\nClient: " << handle_param.buffer_server << std::endl;
     }
+
+    return nullptr;
 }
 
-void* ReceiveMessage_Client(void* args){
-    
-    while (true) {
-        memset(HandleParam.BufferClient, 0, sizeof(HandleParam.BufferClient));
-        int bytes = recv(HandleParam.ClientSendSocket, HandleParam.BufferClient, sizeof(HandleParam.BufferClient), 0);
+void* ReceiveMessage_Client(void* args)
+{
+    UNUSED(args);
+    while (true)
+    {
+        memset(handle_param.buffer_client, 0, sizeof(handle_param.buffer_client));
+        ssize_t bytes = recv(handle_param.client_send_socket,
+                             handle_param.buffer_client,
+                             sizeof(handle_param.buffer_client),
+                             0);
         if (bytes <= 0) break;
-        std::cout << "\nServer: " << HandleParam.BufferClient << std::endl;
+        std::cout << "\nServer: " << handle_param.buffer_client << std::endl;
     }
+
+    return nullptr;
 }

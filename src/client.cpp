@@ -1,16 +1,17 @@
 #include "handler.cpp"
 
-int main() {
-    pthread_t sendThread, recvThread;
+int main()
+{
+    pthread_t send_thread;
+    pthread_t recv_thread;
 
     Create_ClientSocket();
 
-    pthread_create(&sendThread, nullptr, &SendMessage_Client, nullptr);
-    pthread_create(&recvThread, nullptr, &ReceiveMessage_Client, nullptr);
+    pthread_create(&send_thread, nullptr, &SendMessage_Client, nullptr);
+    pthread_create(&recv_thread, nullptr, &ReceiveMessage_Client, nullptr);
 
-    pthread_join(sendThread, nullptr);
-    pthread_join(recvThread, nullptr);
+    pthread_join(send_thread, nullptr);
+    pthread_join(recv_thread, nullptr);
 
-    
     return 0;
 }

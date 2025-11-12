@@ -1,22 +1,26 @@
-#include <iostream>
 #include <pthread.h>
+
+#include <iostream>
+
 #include "handler.cpp"
 
-int main(){
-    pthread_t sendThread, recvThread;
+int main()
+{
+    pthread_t send_thread;
+    pthread_t recv_thread;
 
     Create_ServerSocket();
 
-    pthread_create(&sendThread, nullptr, &SendMessage_Server, nullptr);
-    pthread_create(&recvThread, nullptr, &ReceiveMessage_Server, nullptr);
+    pthread_create(&send_thread, nullptr, &SendMessage_Server, nullptr);
+    pthread_create(&recv_thread, nullptr, &ReceiveMessage_Server, nullptr);
 
-    pthread_join(sendThread, nullptr);
-    pthread_join(recvThread, nullptr);
+    pthread_join(send_thread, nullptr);
+    pthread_join(recv_thread, nullptr);
 
     printf("55555555");
 
-    close(HandleParam.ClientSocket);
-    close(HandleParam.ServerSocket);
+    close(handle_param.client_socket);
+    close(handle_param.server_socket);
 
     return 0;
 }

@@ -1,43 +1,44 @@
 #ifndef HANDLER_H
 #define HANDLER_H
 
-#include <iostream>
-#include <cstring>
-#include <unistd.h>
 #include <arpa/inet.h>
+#include <unistd.h>
+
+#include <cstring>
+#include <iostream>
 
 typedef struct
 {
-    sockaddr_in serverAddress;
-    sockaddr_in ServerSentAddr;
+    sockaddr_in server_address;
+    sockaddr_in server_sent_addr;
 
-    sockaddr_in ClientSentAddr;
+    sockaddr_in client_sent_addr;
 
-    socklen_t ServerSentAddrLen;
-    socklen_t ClientSentAddrLen;
-    
-    int ServerSocket;
-    int ClientSocket;
-    int ClientSendSocket;
+    socklen_t server_sent_addr_len;
+    socklen_t client_sent_addr_len;
 
-    char BufferServer[1024];
-    char BufferClient[1024];
+    int server_socket;
+    int client_socket;
+    int client_send_socket;
 
-    std::string SendMsgServer;
-    std::string SendMsgClient;
+    char buffer_server[1024];
+    char buffer_client[1024];
 
-    std::string UserName_Server;
-    std::string UserName_Client;
-    
-}HandlerParameters;
+    std::string send_msg_server;
+    std::string send_msg_client;
 
-bool Create_ServerSocket();
-bool Create_ClientSocket();
+    std::string user_name_server;
+    std::string user_name_client;
+
+} HandlerParameters;
+
+bool  Create_ServerSocket();
+bool  Create_ClientSocket();
 void* SendMessage_Server(void* args);
 void* SendMessage_Client(void* args);
 void* ReceiveMessage_Server(void* args);
 void* ReceiveMessage_Client(void* args);
 
-HandlerParameters HandleParam {};
+HandlerParameters handle_param{};
 
 #endif // !HANDLER_H

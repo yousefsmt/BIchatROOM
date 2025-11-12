@@ -1,0 +1,94 @@
+# Base style and indentation
+BasedOnStyle: LLVM
+IndentWidth: 4
+TabWidth: 4
+UseTab: Never
+ColumnLimit: 100
+
+# Braces - Allman style (common in embedded, system, and clarity-focused projects)
+BreakBeforeBraces: Allman
+BraceWrapping:
+  AfterClass: true
+  AfterControlStatement: true
+  AfterEnum: true
+  AfterFunction: true
+  AfterNamespace: true
+  AfterStruct: true
+  AfterUnion: true
+  BeforeCatch: true
+  BeforeElse: true
+  SplitEmptyFunction: true
+  SplitEmptyRecord: true
+  SplitEmptyNamespace: true
+
+# Alignment - keep code visually consistent
+AlignAfterOpenBracket: Align
+AlignConsecutiveAssignments: true
+AlignConsecutiveDeclarations: true
+AlignConsecutiveMacros: true
+AlignOperands: true
+AlignTrailingComments: true
+
+# Short constructs - prefer readability
+AllowAllArgumentsOnNextLine: true
+AllowShortBlocksOnASingleLine: Empty
+AllowShortCaseLabelsOnASingleLine: false
+AllowShortFunctionsOnASingleLine: Inline
+AllowShortIfStatementsOnASingleLine: WithoutElse
+AllowShortLoopsOnASingleLine: false
+
+# Pointer, references & spacing
+PointerAlignment: Left
+ReferenceAlignment: Left
+DerivePointerAlignment: false
+SpaceAfterCStyleCast: true
+SpaceBeforeAssignmentOperators: true
+SpaceBeforeParens: ControlStatements
+SpacesInAngles: false
+SpacesInCStyleCastParentheses: false
+SpacesInParentheses: false
+SpacesInSquareBrackets: false
+SpaceBeforeRangeBasedForLoopColon: true
+SpaceBeforeCtorInitializerColon: true
+SpaceBeforeInheritanceColon: true
+
+# Language standard
+Standard: Latest  # Automatically detects latest C++ standard (e.g., C++20 or C++23)
+
+# Includes & imports
+SortIncludes: CaseSensitive
+IncludeBlocks: Regroup
+IncludeCategories:
+  - Regex: '^<.*\.h>'
+    Priority: 1
+  - Regex: '^<.*>'
+    Priority: 2
+  - Regex: '.*'
+    Priority: 3
+SortUsingDeclarations: true
+IncludeIsMainRegex: '(Test)?$'
+
+# Indentation details
+IndentCaseLabels: true
+IndentPPDirectives: AfterHash
+NamespaceIndentation: All
+AccessModifierOffset: -4
+
+# Comments
+ReflowComments: true
+CommentPragmas: '^ IWYU pragma:'
+
+# Advanced modern C++ formatting
+BreakConstructorInitializers: AfterColon
+BreakInheritanceList: AfterColon
+Cpp11BracedListStyle: true
+BinPackParameters: false
+BinPackArguments: false
+AllowAllConstructorInitializersOnNextLine: false
+KeepEmptyLinesAtTheStartOfBlocks: false
+
+# Lambdas and templates
+#SpaceBeforeLambdaColon: true
+AllowShortLambdasOnASingleLine: None
+BreakBeforeConceptDeclarations: true
+PackConstructorInitializers: Never
